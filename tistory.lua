@@ -138,7 +138,7 @@ item_patterns = {
         return nil
       end
       local a, b = string.match(s, "^([a-z]+)[0-9]*(%.daumcdn%.net/.+)")
-      if a == "t" or a == "tistory" or a == "img" then
+      if a == "t" or a == "tistory" or a == "img" or a == "i" then
         s = a .. "1" .. b
       end
       if string.match(s, "%?original$") then
@@ -693,8 +693,11 @@ wget.callbacks.get_urls = function(file, url, is_css, iri)
 
   if item_type == "asset" then
     local a, b = string.match(url, "^https?://([a-z]+)[0-9]*(%.daumcdn%.net/.+)")
-    if a == "t" or a == "img" or a == "tistory" then
+    if a == "t" or a == "img" or a == "tistory" or a == "i" then
       for i = 0 , 4 do
+        if a == "i" and (i > 2 or i == 0) then
+          i = 1
+        end
         if i == 0 then
           i = ""
         else
@@ -1032,7 +1035,7 @@ wget.callbacks.finish = function(start_time, end_time, wall_time, numurls, total
     local items = nil
     local count = 0
     for item, _ in pairs(data) do
-      --print("found item", item)
+      print("found item", item)
       if items == nil then
         items = item
       else
