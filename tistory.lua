@@ -371,11 +371,12 @@ allowed = function(url, parenturl)
   end
 
   local item_domain = get_domain_item(url)
+  local is_cdn = string.match(url, "^https?://[^/]*daumcdn%.net/")
+    or string.match(url, "^https?://[^/]*kakao%.com/")
+    or string.match(url, "^https?://[^/]*kakaocdn%.net/")
 
   if not item_domain
-    and not string.match(url, "^https?://[^/]*daumcdn%.net/")
-    and not string.match(url, "^https?://[^/]*kakao%.com/")
-    and not string.match(url, "^https?://[^/]*kakaocdn%.net/") then
+    and not is_cdn then
     if not string.match(url, "%.") then
       return false
     end
@@ -401,8 +402,8 @@ allowed = function(url, parenturl)
     end
     if item_type == "blog"
       and (
-        item_domain == context["custom_domain"]
-        or item_domain == context["site"]
+        (context["custom_domain"] and item_domain == context["custom_domain"])
+        or (context["site"] and item_domain == context["site"])
       ) then
       return true
     end
