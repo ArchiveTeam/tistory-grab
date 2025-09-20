@@ -754,7 +754,7 @@ wget.callbacks.get_urls = function(file, url, is_css, iri)
     end
     if item_type == "blog" then
       if string.match(url, "^https?://[^/]+/sitemap%.xml$") then
-        local max_year = nil
+        local max_year = 0
         for s in string.gmatch(html, "<url>(.-)</url>") do
           local loc = string.match(s, "<loc>%s*(.-)%s*</loc>")
           local lastmod = string.match(s, "<lastmod>%s*(.-)%s*</lastmod>")
@@ -768,7 +768,7 @@ wget.callbacks.get_urls = function(file, url, is_css, iri)
               error("Did not find year...")
             end
             year = tonumber(year)
-            if not max_year or year > max_year then
+            if year > max_year then
               max_year = year
             end
           end
