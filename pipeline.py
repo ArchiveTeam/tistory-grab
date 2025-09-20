@@ -78,7 +78,7 @@ if not WGET_AT:
 #
 # Update this each time you make a non-cosmetic change.
 # It will be added to the WARC files and reported to the tracker.
-VERSION = '20250920.01'
+VERSION = '20250920.02'
 USER_AGENT = 'Mozilla/5.0 (Windows NT 10.0; Win64; x64; rv:136.0) Gecko/20100101 Firefox/136.0'
 TRACKER_ID = 'tistory'
 TRACKER_HOST = 'legacy-api.arpa.li'
@@ -318,7 +318,7 @@ class WgetArgs(object):
                 site = get_site(item_value)
                 wget_args.extend(['--warc-header', 'tistory-blog: '+site])
                 wget_args.append('https://{}/'.format(site))
-            elif item_type == 'path':
+            elif item_type == 'path2':
                 site, path = item_value.split(':', 1)
                 site = get_site(site)
                 wget_args.extend(['--warc-header', 'tistory-article-site: '+site])

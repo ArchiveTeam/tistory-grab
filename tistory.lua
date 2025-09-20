@@ -149,7 +149,7 @@ item_patterns = {
   },
   ["^https?://([^%.]+%.kakaocdn%.net/.+)$"]="asset",
   ["^https?://([^/]+/+[a-zA-Z0-9%-_]+)$"]={
-    ["type"]="path",
+    ["type"]="path2",
     ["additional"]=function(s)
       local site, path = string.match(s, "^([^/]+)/+(.+)$")
       site = get_domain_item(s)
@@ -201,7 +201,7 @@ item_patterns = {
     end
   },
   ["^https?://([^/]+/[a-z]+/[^%?&]+)$"]={
-    ["type"]="path",
+    ["type"]="path2",
     ["additional"]="^https?://([^/]+/+[a-zA-Z0-9%-_]+)$"
   },
   ["^https?://tv%.kakao%.com/v/([0-9]+)"]="video",
@@ -355,7 +355,7 @@ allowed = function(url, parenturl)
       local new_item = match["type"] .. ":" .. match["value"]
       local to_skip = match["type"] ~= "blog" and match["type"] ~= "maybeblog"
       if new_item ~= item_name then
-        if match["type"] == "path" then
+        if match["type"] == "path2" then
           local dir = string.match(url, "^(https?://[^/]+/.+/).")
           if dir then
             allowed(dir, parenturl)
@@ -559,7 +559,7 @@ wget.callbacks.get_urls = function(file, url, is_css, iri)
     if context["custom_domain"]
       and (
         (item_type == "blog" and get_domain_item(url_) == item_value)
-        or (item_type == "path" and get_domain_item(url) == context["site"])
+        or (item_type == "path2" and get_domain_item(url) == context["site"])
       ) then
       local path = string.match(url_, "^https?://[^/]+(/.*)")
       check(urlparse.absolute("https://" .. context["custom_domain"] .. "/", path))
@@ -724,7 +724,7 @@ wget.callbacks.get_urls = function(file, url, is_css, iri)
     if string.match(url, "%?_version_=[0-9]+$") then
       check(string.match(url, "^([^%?]+)"))
     end
-    if item_type == "path" or item_type == "blog" then
+    if item_type == "path2" or item_type == "blog" then
       if not context["config"] then
         context["config"] = cjson.decode(string.match(html, "window%.T%.config%s*=%s*({.-});"))
         local default_url = string.match(context["config"]["DEFAULT_URL"], "^https?://([^/]+)")
@@ -777,7 +777,7 @@ wget.callbacks.get_urls = function(file, url, is_css, iri)
           print("This blog contains new posts. Skipping...")
           local new_discovered_items = {}
           for item_name, v in pairs(discovered_items) do
-            if not string.match(item_name, "^path:") then
+            if not string.match(item_name, "^path2:") then
               new_discovered_items[item_name] = v
             end
           end
@@ -827,7 +827,7 @@ wget.callbacks.get_urls = function(file, url, is_css, iri)
         check(set_new_params(url, {[param_key]=tostring(json[key])}))
       end
     end
-    if item_type == "path" then
+    if item_type == "path2" then
       local temp = string.match(url, "^(.+)/m/guestbook$")
       if temp then
         for _, path in pairs({
