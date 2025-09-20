@@ -160,8 +160,8 @@ item_patterns = {
         if context["custom_domain"] then
           if site == context["custom_domain"] then
             site = context["site"]
-          else
-            error("Found unexpected site " .. site .. ".")
+          --[[else
+            error("Found unexpected site " .. site .. ".")]]
           end
         else
           return nil
