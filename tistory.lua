@@ -148,10 +148,10 @@ item_patterns = {
     end
   },
   ["^https?://([^%.]+%.kakaocdn%.net/.+)$"]="asset",
-  ["^https?://([^/]+/[a-zA-Z0-9%-_]+)$"]={
+  ["^https?://([^/]+/+[a-zA-Z0-9%-_]+)$"]={
     ["type"]="path",
     ["additional"]=function(s)
-      local site, path = string.match(s, "^([^/]+)/(.+)$")
+      local site, path = string.match(s, "^([^/]+)/+(.+)$")
       site = get_domain_item(s)
       if not site or site == "www" then
         return nil
@@ -170,6 +170,10 @@ item_patterns = {
       local match = string.match(path, "^m/(.*)$")
       if match then
         path = match
+        if not string.match(path, "^[a-zA-Z0-9%-_]+$")
+          and not string.match(path, "^[a-z]+/[^%?&]+$") then
+          return nil
+        end
       end
       if string.match(path, "^api/") then
         return nil
@@ -198,7 +202,7 @@ item_patterns = {
   },
   ["^https?://([^/]+/[a-z]+/[^%?&]+)$"]={
     ["type"]="path",
-    ["additional"]="^https?://([^/]+/[a-zA-Z0-9%-_]+)$"
+    ["additional"]="^https?://([^/]+/+[a-zA-Z0-9%-_]+)$"
   },
   ["^https?://tv%.kakao%.com/v/([0-9]+)"]="video",
   ["^https?://play%-tv%.kakao%.com/embed/player/cliplink/([0-9]+)"]="video",
@@ -560,7 +564,7 @@ wget.callbacks.get_urls = function(file, url, is_css, iri)
       local path = string.match(url_, "^https?://[^/]+(/.*)")
       check(urlparse.absolute("https://" .. context["custom_domain"] .. "/", path))
     end
-    if item_type == "blog"
+    --[[if item_type == "blog"
       and string.match(url_, "^https?://[^/]+/[0-9]+$")
       and get_domain_item(url_)  then
       local post_id = tonumber(string.match(url_, "([0-9]+)$"))
@@ -573,7 +577,7 @@ wget.callbacks.get_urls = function(file, url, is_css, iri)
           check("https://" .. item_value .. ".tistory.com/" .. tostring(i))
         end
       end
-    end
+    end]]
     if string.match(url, "^https?://[^/]*daumcdn%.net/cfile/tistory")
       and not string.match(url, "%?") then
       check(url .. "?original")
