@@ -777,7 +777,8 @@ wget.callbacks.get_urls = function(file, url, is_css, iri)
           print("This blog contains new posts. Skipping...")
           local new_discovered_items = {}
           for item_name, v in pairs(discovered_items) do
-            if not string.match(item_name, "^path2:") then
+            local site_name = string.match(item_name, "^path2:([^:]+):")
+            if not site_name or site_name ~= context["site"] then
               new_discovered_items[item_name] = v
             end
           end
