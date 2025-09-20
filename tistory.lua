@@ -200,7 +200,7 @@ item_patterns = {
       return result
     end
   },
-  ["^https?://([^/]+/[a-z]+/[^%?&]+)$"]={
+  ["^https?://([^/]+/+[a-z]+/[^%?&]+)$"]={
     ["type"]="path2",
     ["additional"]="^https?://([^/]+/+[a-zA-Z0-9%-_]+)$"
   },
