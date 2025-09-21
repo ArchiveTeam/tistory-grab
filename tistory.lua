@@ -55,6 +55,9 @@ get_domain_item = function(domain)
     domain = temp
   end
   domain = string.match(domain, "^([^/]+)")
+  if not domain then
+    return nil
+  end
   local temp = string.match(domain, "^([^%.]+)%.tistory%.com$")
   if temp then
     return temp
@@ -395,6 +398,9 @@ allowed = function(url, parenturl)
     discover_item(discovered_outlinks, string.match(percent_encode_url(url), "^([^%s]+)"))
     return false
   else
+    if not string.match(url, "^https?://[^/]+/") then
+      url = url .. "/"
+    end
     local path = string.match(url, "^https?://[^/]+/([^%?]*)")
     if string.match(path, "^m/") then
       path = string.match(path, "^m/(.*)$")
