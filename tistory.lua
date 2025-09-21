@@ -959,7 +959,7 @@ wget.callbacks.httploop_result = function(url, err, http_stat)
     tries = tries + 1
     local maxtries = 2
     if status_code == 429 then
-      maxtires = 10
+      maxtries = 10
     elseif status_code == 403 then
       tries = maxtries + 1
     end
