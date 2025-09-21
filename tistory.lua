@@ -724,7 +724,12 @@ wget.callbacks.get_urls = function(file, url, is_css, iri)
     end
     if item_type == "path2" or item_type == "blog" then
       if not context["config"] then
-        context["config"] = cjson.decode(string.match(html, "window%.T%.config%s*=%s*({.-});"))
+        local config = string.match(html, "window%.T%.config%s*=%s*({.-});")
+        if not config then
+          abort_item()
+          return {}
+        end
+        context["config"] = cjson.decode(config)
         local default_url = string.match(context["config"]["DEFAULT_URL"], "^https?://([^/]+)")
         if not default_url then
           error("Could not find default URL.")
