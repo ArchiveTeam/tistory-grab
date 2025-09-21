@@ -957,8 +957,10 @@ wget.callbacks.httploop_result = function(url, err, http_stat)
     io.stdout:write("Server returned bad response. ")
     io.stdout:flush()
     tries = tries + 1
-    local maxtries = 6
-    if status_code == 403 then
+    local maxtries = 2
+    if status_code == 429 then
+      maxtires = 10
+    elseif status_code == 403 then
       tries = maxtries + 1
     end
     if tries > maxtries then
