@@ -157,12 +157,9 @@ item_patterns = {
         return nil
       end
       if string.match(site, "%.") then
-        if context["custom_domain"] then
-          if site == context["custom_domain"] then
-            site = context["site"]
-          --[[else
-            error("Found unexpected site " .. site .. ".")]]
-          end
+        if context["custom_domain"]
+          and site == context["custom_domain"] then
+          site = context["site"]
         else
           return nil
         end
@@ -341,6 +338,7 @@ allowed = function(url, parenturl)
     or string.match(url, "/auth/login/%?")
     or string.match(url, "{[^}]+}")
     or string.match(url, "/comment/add/[0-9]+$")
+    or string.match(url, "^https?://[^/]+/m/tag/")
     or (
       string.match(url, "^https?://[^/]+/m/api/")
       and not string.match(url, "^https?://[^/]*tistory%.com/")
@@ -852,8 +850,8 @@ wget.callbacks.get_urls = function(file, url, is_css, iri)
       end
       if string.match(url, "^https?://[^/]+/m/[0-9]+$") then
         for _, path in pairs({
-          "/m/api/entry/" .. context["post_id"] .. "/related",
-          "/m/api/entry/" .. context["post_id"] .. "/popular",
+          --"/m/api/entry/" .. context["post_id"] .. "/related",
+          --"/m/api/entry/" .. context["post_id"] .. "/popular",
           "/m/api/" .. context["post_id"] .. "/comment/count",
           "/m/api/" .. context["post_id"] .. "/comment/config",
           "/m/api/" .. context["post_id"] .. "/comment/pin",
@@ -955,10 +953,8 @@ wget.callbacks.httploop_result = function(url, err, http_stat)
     io.stdout:flush()
     tries = tries + 1
     local maxtries = 6
-    if status_code == 503 then
-      maxtries = 10
-    elseif status_code == 403 then
-      maxtries = 20
+    if status_code == 403 then
+      tries = maxtries + 1
     end
     if tries > maxtries then
       io.stdout:write(" Skipping.\n")
@@ -968,9 +964,6 @@ wget.callbacks.httploop_result = function(url, err, http_stat)
       return wget.actions.EXIT
     end
     local factor = 2
-    if status_code == 403 then
-      factor = 1.1
-    end
     local sleep_time = math.random(
       math.floor(math.pow(factor, tries-0.5)),
       math.floor(math.pow(factor, tries))
