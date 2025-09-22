@@ -735,7 +735,8 @@ wget.callbacks.get_urls = function(file, url, is_css, iri)
     if string.match(url, "%?_version_=[0-9]+$") then
       check(string.match(url, "^([^%?]+)"))
     end
-    if item_type == "path2" or item_type == "blog" then
+    if (item_type == "path2" and context["path"] ~= "rss")
+      or item_type == "blog" then
       if not context["config"] then
         local config = string.match(html, "window%.T%.config%s*=%s*({.-});")
         if not config then
