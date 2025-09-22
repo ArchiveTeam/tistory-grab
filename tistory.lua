@@ -979,9 +979,9 @@ wget.callbacks.httploop_result = function(url, err, http_stat)
     io.stdout:flush()
     tries = tries + 1
     local maxtries = 2
-    if status_code == 429 then
+    --[[if status_code == 429 then
       maxtries = 10
-    elseif status_code == 403 then
+    else]]if status_code == 403 then
       tries = maxtries + 1
     end
     if tries > maxtries then
