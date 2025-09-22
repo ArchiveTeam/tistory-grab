@@ -160,10 +160,13 @@ item_patterns = {
         return nil
       end
       if string.match(site, "%.") then
-        if context["custom_domain"]
-          and site == context["custom_domain"] then
+        if context["custom_domain"] and site == context["custom_domain"] then
           site = context["site"]
-        else
+        elseif context["site"] and site == context["site"] then
+          if context["tistory_blog"] then
+            site = context["tistory_blog"]
+          end
+        elseif context["site"] then
           return nil
         end
       end
@@ -566,7 +569,11 @@ wget.callbacks.get_urls = function(file, url, is_css, iri)
         or (item_type == "path2" and get_domain_item(url) == context["site"])
       ) then
       local path = string.match(url_, "^https?://[^/]+(/.*)")
-      check(urlparse.absolute("https://" .. context["custom_domain"] .. "/", path))
+      local extra_domain = context["custom_domain"]
+      if context["site"] == context["custom_domain"] then
+        extra_domain = context["tistory_blog"] .. ".tistory.com"
+      end
+      check(urlparse.absolute("https://" .. extra_domain .. "/", path))
     end
     --[[if item_type == "blog"
       and string.match(url_, "^https?://[^/]+/[0-9]+$")
@@ -736,6 +743,13 @@ wget.callbacks.get_urls = function(file, url, is_css, iri)
           return {}
         end
         context["config"] = cjson.decode(config)
+        local tistory_blog = string.gsub(string.match(html, "window%.TistoryBlog%s*=%s*({.-});"), "([a-zA-Z]+):%s*\"", "\"%1\":\"")
+        context["tistory_blog"] = get_domain_item(cjson.decode(tistory_blog)["tistoryUrl"])
+        if string.match(context["tistory_blog"], "%.") then
+          print("Did not expect a custom domain.")
+          abort_item()
+          return {}
+        end
         local default_url = string.match(context["config"]["DEFAULT_URL"], "^https?://([^/]+)")
         if not default_url then
           error("Could not find default URL.")
@@ -796,6 +810,10 @@ wget.callbacks.get_urls = function(file, url, is_css, iri)
           return {}
         end
       end
+      local blog_id = tostring(context["config"]["BLOG"]["id"])
+      context["blog_id"] = blog_id
+      ids[blog_id] = true
+      check("https://tistory1.daumcdn.net/tistory/" .. blog_id .. "/skin/skin.html")
       if string.match(url, "^https?://[^/]+/$") then
         for _, path in pairs({
           "sitemap.xml",
@@ -813,10 +831,6 @@ wget.callbacks.get_urls = function(file, url, is_css, iri)
           check(urlparse.absolute(url, path))
         end
       end
-      local blog_id = tostring(context["config"]["BLOG"]["id"])
-      context["blog_id"] = blog_id
-      ids[blog_id] = true
-      check("https://tistory1.daumcdn.net/tistory/" .. blog_id .. "/skin/skin.html")
     end
     if string.match(url, "/m/api/guestbook$")
       or string.match(url, "/m/api/guestbook%?")
