@@ -589,7 +589,7 @@ wget.callbacks.get_urls = function(file, url, is_css, iri)
         end
       end
     end]]
-    if string.match(url, "^https?://[^/]*daumcdn%.net/cfile/tistory")
+    if string.match(url, "^https?://[^/]*daumcdn%.net/cfile/")
       and not string.match(url, "%?") then
       check(url .. "?original")
     end
