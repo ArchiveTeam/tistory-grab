@@ -160,6 +160,11 @@ item_patterns = {
         return nil
       end
       if string.match(site, "%.") then
+        if string.match(site, "daumcdn%.net$")
+          or string.match(site, "kakaocdn%.net$")
+          or string.match(site, "kakao%.com$") then
+          return nil
+        end
         if context["custom_domain"] and site == context["custom_domain"] then
           site = context["site"]
         elseif context["site"] and site == context["site"] then
